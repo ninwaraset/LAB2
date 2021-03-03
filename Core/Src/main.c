@@ -50,6 +50,7 @@ uint32_t A = 0 ;
 uint32_t x =0;
 GPIO_PinState SwitchState[2];
 uint32_t C[11];
+uint32_t P = 0 ;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -100,6 +101,19 @@ int main(void)
 
   uint32_t B = 0 ;
 
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6,GPIO_PIN_SET);
+
+	 C[10] = 6;
+	 C[9] = 2;
+	 C[8] = 3;
+	 C[7] = 4;
+	 C[6] = 0;
+	 C[5] = 5;
+	 C[4] = 0;
+	 C[3] = 0;
+	 C[2] = 0;
+	 C[1] = 4;
+	 C[0] = 6;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -109,20 +123,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	 ButtonMatrixUpdate();
-	 C[10] = 6;
-	 C[9]=2;
-	 C[8]=3;
-	 C[7]=4;
-	 C[6]=0;
-	 C[5]= 5;
-	 C[4]=0;
-	 C[3]=0;
-	 C[2]=0;
-	 C[1]= 4;
-	 C[0]=6;
+	  ButtonMatrixUpdate();
 
-	  if(HAL_GetTick() - BTimeStamp >= 100)
+	  if(HAL_GetTick() - BTimeStamp >= 400)
 	  {
 		  BTimeStamp = HAL_GetTick();
 
@@ -138,12 +141,15 @@ int main(void)
 		 if(SwitchState[0] == GPIO_PIN_SET && SwitchState[1] == GPIO_PIN_RESET)
 		 {	 A = ButtonMatrixState;
 			 if(A != 32768 && A != 8192 && A != 16384 && A != 128 && A != 2048 )
-			 {
+			 {	 if(C[10] != 0)
+				 {
+					 P = 1;
+				 }
 				 for( int z = 10; z > 0 ; z = z - 1 )
 				 {	 B = C[z-1];
 					 C[z] = B;
-
 				 }
+
 			 }
 			 if(A == 1) //K1
 			 {
@@ -167,6 +173,7 @@ int main(void)
 					 C[z] = 0;
 
 				 }
+				 P=0;
 			 }
 			 else if(A == 16) //K5
 			 {
@@ -205,22 +212,25 @@ int main(void)
 			 }
 			 else if(A == 32768) //K16
 			 {	 x = 123;
-				 if(C[10] == 6 && C[9]== 2&&C[8]== 3&&C[7]== 4 &&C[6]==0 )
+				 if(P == 0 && C[10] == 6 && C[9]== 2&&C[8]== 3&&C[7]== 4 &&C[6]==0 )
 				 {	x = 234;
 					 if(C[5]== 5 &&C[4]==0 &&C[3]==0 &&C[2]==0 &&C[1]== 4 && C[0]==6)
 					 {	x = 345;
-						HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5,GPIO_PIN_SET);
+						HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6,GPIO_PIN_RESET);
 					 }
+					 else
+					 {
+						 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6,GPIO_PIN_SET);
+					 }
+				 }
+				 else
+				 {
+					 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6,GPIO_PIN_SET);
 				 }
 			 }
 
 		 }
 
-		 if(x == 345)
-				 {
-					 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5,GPIO_PIN_SET);
-				 }
-		 SwitchState[1] = SwitchState[0];
 	  }
 
   }
@@ -323,6 +333,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, LD2_Pin|GPIO_PIN_7|GPIO_PIN_9, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
@@ -337,6 +350,13 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : LD2_Pin PA7 PA9 */
   GPIO_InitStruct.Pin = LD2_Pin|GPIO_PIN_7|GPIO_PIN_9;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA6 */
+  GPIO_InitStruct.Pin = GPIO_PIN_6;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
