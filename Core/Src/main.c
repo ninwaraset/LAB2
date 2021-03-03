@@ -46,7 +46,10 @@ UART_HandleTypeDef huart2;
 //save status button matrix
 uint16_t ButtonMatrixState =0;
 uint32_t ButtonMatrixTimestamp =0;
-
+uint32_t A = 0 ;
+uint32_t x =0;
+GPIO_PinState SwitchState[2];
+uint32_t C[11];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -93,6 +96,10 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  uint32_t BTimeStamp = 0;
+
+  uint32_t B = 0 ;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -100,7 +107,105 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+	  ButtonMatrixUpdate();
 
+	  if(HAL_GetTick() - BTimeStamp >= 100)
+		{ BTimeStamp = HAL_GetTick();
+
+		 if(ButtonMatrixState !=0 )
+		 {
+			 SwitchState[0] = 1;
+		 }
+		 else
+		 {
+			 SwitchState[0] = 0;
+		 }
+
+		 if(SwitchState[0] == GPIO_PIN_SET && SwitchState[1] == GPIO_PIN_RESET)
+		 {	 A = ButtonMatrixState;
+			 if(A != 32768 && A != 8192 && A != 16384 && A != 128 && A != 2048 )
+			 {
+				 for( int z = 10; z > 0 ; z = z - 1 )
+				 {	 B = C[z-1];
+					 C[z] = B;
+
+				 }
+			 }
+			 if(A == 1) //K1
+			 {
+				 x = 7;
+				 C[0]=x;
+			 }
+			 else if(A== 2 ) //K2
+			 {
+				 x = 8;
+				 C[0]=x;
+			 }
+			 else if(A == 4) //K3
+			 {
+				 x = 9;
+				 C[0]=x;
+			 }
+			 else if(A == 8) //K4
+			 {
+			 	 for( int z = 10; z >= 0 ; z = z - 1 )
+			 	 {
+			 	 	 C[z] = 0;
+
+			 	 }
+			 }
+			 else if(A == 16) //K5
+			 {
+				 x = 4;
+				 C[0]=x;
+			 }
+			 else if(A == 32) //K6
+			 {
+				 x = 5;
+				 C[0]=x;
+			 }
+			 else if(A == 64) //K7
+			 {
+				 x = 6;
+				 C[0]=x;
+			 }
+			 else if(A == 256) //K9
+			 {
+				 x = 1;
+				 C[0]=x;
+			 }
+			 else if(A == 512) //K10
+			 {
+				 x = 2;
+				 C[0]=x;
+			 }
+			 else if(A == 1024) //K11
+			 {
+				 x = 3;
+				 C[0]=x;
+			 }
+			 else if(A == 4096) //K13
+			 {
+				 x = 0;
+				 C[0]=x;
+			 }
+			 else if(A == 32768) //K16
+			 {	 x = 123;
+				 if(C[10] == 6 && C[9]== 2&&C[8]== 3&&C[7]== 4 &&C[6]==0 )
+				 {	x = 234;
+					 if(C[5]== 5 &&C[4]==0 &&C[3]==0 &&C[2]==0 &&C[1]== 4 && C[0]==6)
+					 {	x = 345;
+						 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
+//						 HAL_GPIO_WritePin(GPIOx, GPIO_Pin, PinState)
+					 }
+				 }
+			 }
+
+		 }
+
+
+		 SwitchState[1] = SwitchState[0];
+		}
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
