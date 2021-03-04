@@ -103,17 +103,7 @@ int main(void)
 
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6,GPIO_PIN_SET);
 
-	 C[10] = 6;
-	 C[9] = 2;
-	 C[8] = 3;
-	 C[7] = 4;
-	 C[6] = 0;
-	 C[5] = 5;
-	 C[4] = 0;
-	 C[3] = 0;
-	 C[2] = 0;
-	 C[1] = 4;
-	 C[0] = 6;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
