@@ -129,7 +129,8 @@ int main(void)
 		 }
 
 		 if(SwitchState[0] == GPIO_PIN_SET && SwitchState[1] == GPIO_PIN_RESET)
-		 {	 A = ButtonMatrixState;
+		 {
+			 A = ButtonMatrixState;
 			 if(A != 32768 && A != 8192 && A != 16384 && A != 128 && A != 2048 )
 			 {	 if(C[10] != 0)
 				 {
